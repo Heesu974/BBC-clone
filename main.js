@@ -3,9 +3,18 @@
     const stepElements = document.querySelectorAll(".step");
     const graphicElements = document.querySelectorAll(".graphic-item");
     let currentItem = graphicElements[0];
+    let ioIndex;
+
+    const io = new IntersectionObserver((entries, observer) => {
+        // console.log(entries[0].target.dataset.index);
+        ioIndex = parseInt(entries[0].target.dataset.index);
+        // console.log(typeof ioIndex)
+    })
 
 
     for (let i = 0; i < stepElements.length; i++) {
+        io.observe(stepElements[i]);
+        // >>어떤 대상을 관찰 할건지
         // 첫번째 방법
         // stepElements[i].setAttribute("data-index", i);
         // 두번째 방법
@@ -23,12 +32,22 @@
     window.addEventListener("scroll", () => {
         let step;
         let boundingRect;
-
-        for (let i = 0; i < stepElements.length; i++) {
+        let temp = 0;
+        // 현재, 전, 후 만 체크합시다.
+        // 따라서, ioIndex - 1 == 전,
+        // ioIndex + 1 == 후. 
+        for (let i = ioIndex - 1; i < ioIndex + 2; i++) {
+            // 왜 여기가 ioIndex + 2 인지 이해 안 감
+            // >> i 값이 현재, 전 , 후 가 되도록 하기 위해서 후 보다 1이 커야 하기 때문에
             step = stepElements[i];
+
+            if (!step) continue;
             boundingRect = step.getBoundingClientRect();
+
+            temp++;
+
             if (boundingRect.top > window.innerHeight * 0.1 && boundingRect.top < window.innerHeight * 0.8) {
-                console.log(step.dataset.index);
+                // console.log(step.dataset.index);
 
                 if (currentItem) {
                     inactivate();
@@ -37,7 +56,7 @@
                 activate();
 
             };
-        };
+        }; console.log(temp)
     });
     activate();
 })();
